@@ -19,7 +19,7 @@ struct Group {
 
 struct HeapVisitor<'a> {
     stack: Vec<(&'a Ast, Frame<'a>)>,
-    stack_class: Vec<(ClassInduct<'a>, ClassFrame)>,
+    stack_class: Vec<ClassInduct<'a>>,
 }
 
 enum Frame<'a> {
@@ -27,8 +27,6 @@ enum Frame<'a> {
     Concat { head: &'a Ast, tail: &'a [Ast] },
     Alternation { head: &'a Ast, tail: &'a [Ast] },
 }
-
-enum ClassFrame {}
 
 enum ClassInduct<'a> {
     BinaryOp(&'a ClassSetBinaryOp),
@@ -119,9 +117,6 @@ impl<'a> Frame<'a> {
 }
 
 fn go() {
-    dbg!(std::mem::size_of::<Frame>());
-    dbg!(std::mem::size_of::<HeapVisitor>());
-    dbg!(std::mem::size_of::<ClassInduct>());
     let ast = Ast::Concat(Concat {
         asts: vec![Ast::Literal(Literal {})],
     });
