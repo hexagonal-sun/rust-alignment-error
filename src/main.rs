@@ -1,4 +1,22 @@
+use std::alloc::{GlobalAlloc, Layout};
 use std::{arch::asm, io::Error};
+
+// Avoid calling malloc in libc which might expect a properly aligned stack.
+#[global_allocator]
+static GLOBAL: Global = Global;
+struct Global;
+unsafe impl GlobalAlloc for Global {
+    unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
+        static mut MEM: [u8; 1024 * 1024] = [0; 1024 * 1024];
+        static mut PTR: *mut u8 = unsafe { MEM.as_mut_ptr() };
+        let offset = PTR.align_offset(layout.align());
+        let result = PTR.add(offset);
+        PTR = result.add(layout.size());
+        result
+    }
+
+    unsafe fn dealloc(&self, _ptr: *mut u8, _layout: Layout) {}
+}
 
 enum Ast {
     Literal(Literal),
