@@ -134,7 +134,7 @@ impl<'a> Frame<'a> {
     }
 }
 
-fn go() {
+extern "C" fn go() {
     let ast = Ast::Concat(Concat {
         asts: vec![Ast::Literal(Literal {})],
     });
@@ -147,8 +147,8 @@ fn main() -> () {
         asm!("push edi",
              "mov edi, esp",
              "and esp, 0xfffffff0",
-             // Deliberately mis-align the stack to 8-byte alignment. Note that this *SHOULD* be
-             // okay since we've set -S64 in the data-layout field in the target JSON.
+             // Deliberately mis-align the stack to 4-byte alignment. Note that this *SHOULD* be
+             // okay since we've set -S32 in the data-layout field in the target JSON.
              "sub esp, 0x4",
              "call {go}",
              "mov esp, edi",
